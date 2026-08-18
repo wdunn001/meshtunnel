@@ -1,0 +1,25 @@
+# Example Reticulum config for a meshtunnel end.
+# Pass the directory containing this file (named `config`) as --rns-config.
+#
+# This shows a leaf node attaching to a mesh entry point over TCP. Swap the
+# interface block for whatever gives THIS node reach to the other end:
+# a shared local instance, an AutoInterface on the LAN, a radio interface, etc.
+
+[reticulum]
+  # A leaf that only tunnels does not need to route for others.
+  enable_transport = No
+  # Run a private instance so this node's flap/reconnect accounting is its own.
+  share_instance = No
+  instance_name = meshtunnel_leaf
+  panic_on_interface_error = No
+
+[logging]
+  loglevel = 4
+
+[interfaces]
+
+  [[Mesh Entry]]
+    type = TCPClientInterface
+    enabled = yes
+    target_host = mesh.example.net
+    target_port = 4965

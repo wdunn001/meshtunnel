@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "meshtunnel"
+version = "0.1.0"
+description = "Carry arbitrary UDP over a Reticulum mesh — a generic UDP-over-Reticulum tunnel"
+readme = "README.md"
+requires-python = ">=3.7"
+license = { text = "MIT" }
+authors = [{ name = "William Dunn" }]
+keywords = ["reticulum", "mesh", "udp", "tunnel", "networking"]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Communications",
+    "Topic :: Internet",
+    "Topic :: System :: Networking",
+]
+dependencies = ["rns>=0.7"]
+
+[project.urls]
+Homepage = "https://github.com/wdunn001/meshtunnel"
+Source = "https://github.com/wdunn001/meshtunnel"
+
+[project.scripts]
+meshtunnel = "meshtunnel:main"
+
+[tool.setuptools]
+py-modules = ["meshtunnel"]
