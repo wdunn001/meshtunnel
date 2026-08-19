@@ -6,7 +6,7 @@ tiny per-datagram header move a real-time UDP protocol across Reticulum with
 nothing app-specific baked in. A game is one configuration; any UDP service (game servers, voice, telemetry, DNS, custom protocols) tunnels the same way.
 
 It's the unreliable/streaming companion to request/response-over-Reticulum:
-where a REST-shaped service does one call → one reply, meshtunnel is a raw
+where a REST-shaped service does one call -> one reply, meshtunnel is a raw
 datagram pipe for latency-sensitive, high-rate protocols that own their own
 reliability.
 
@@ -22,8 +22,8 @@ Two ends, named for the direction traffic flows (not "client/server", which
 would collide with the client/server of whatever you're tunneling):
 
 ```
-app-client ──UDP──▶ INGRESS ══ Reticulum Link ══ EGRESS ──UDP──▶ app-server
-           ◀──────                                        ◀──────
+app-client --UDP--> INGRESS == Reticulum Link == EGRESS --UDP--> app-server
+           <------                                        <------
 ```
 
 - **EGRESS** runs next to the target service. It announces a Reticulum
@@ -55,7 +55,7 @@ pip install rns          # Reticulum, the one dependency
 ```
 
 Python 3.7+. You need a working Reticulum config on both ends (any transport:
-TCP, I2P, LoRa/RNode…). meshtunnel uses whatever interfaces Reticulum is
+TCP, I2P, LoRa/RNode...). meshtunnel uses whatever interfaces Reticulum is
 configured with; point `--rns-config` at a specific config dir if not the
 default.
 
@@ -127,7 +127,7 @@ python meshtunnel.py egress --service mygame --target-host 192.0.2.10 \
 | `--allow-ports` | optional port allow-list, e.g. `5998,5999,7000-7400` |
 | `--identity` | egress RNS identity file (created if missing) |
 | `--identity-ip-range` | CIDR for stable synthetic per-client source IPs |
-| `--registry-file` | JSON persisting hash → synthetic IP (the client registry) |
+| `--registry-file` | JSON persisting hash -> synthetic IP (the client registry) |
 | `--deny-file` | denied ingress hashes, one hex per line, `#` comments, hot-reloaded |
 | `--allow-file` | allowlist mode: only listed hashes may connect |
 | `--require-identity` | drop links that don't identify (implied by `--allow-file`) |

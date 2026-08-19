@@ -4,8 +4,8 @@ meshtunnel carries a UDP protocol across a Reticulum mesh without changing
 either end of that protocol. A **bridge pair** shims the transport underneath:
 
 ```
-[app client] ─UDP→ [ingress] ══ Reticulum Link ══ [egress] ─UDP→ [app server]
-                     (RNS)                          (RNS)
+[app client] -UDP-> [ingress] == Reticulum Link == [egress] -UDP-> [app server]
+                      (RNS)                           (RNS)
 ```
 
 Neither the app client nor the app server is aware of it. They speak plain UDP
