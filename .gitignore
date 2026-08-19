@@ -7,7 +7,7 @@ dist/
 .venv/
 venv/
 
-# runtime state — never commit identities, registries, or ban lists
+# runtime state, never commit identities, registries, or ban lists
 *_identity
 mt_*_identity
 meshtunnel_identity

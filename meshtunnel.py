@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-MeshTunnel — generic UDP-over-Reticulum tunnel.
+MeshTunnel, generic UDP-over-Reticulum tunnel.
 
 A reusable transport primitive: it carries arbitrary UDP datagrams across a
 Reticulum mesh, tagged by destination port, with nothing app-specific baked in.
@@ -11,16 +11,16 @@ request/response over the mesh; MeshTunnel is a raw datagram pipe for latency-
 sensitive, high-rate protocols that own their own reliability.
 
 Two ends, both leaf nodes that peer with the Local Peering Hub. They are named
-for the direction traffic flows through them, NOT "client/server" — that would
+for the direction traffic flows through them, NOT "client/server", which would
 collide with the client/server of whatever protocol is being tunneled:
 
-  EGRESS — next to the target service; tunneled traffic EXITS here onto the real
+  EGRESS sits next to the target service; tunneled traffic EXITS here onto the real
            service. Announces the Reticulum destination; the ingress dials it.
       meshtunnel.py egress --service mygame --target-host 192.0.2.10
       # replays each tunneled datagram to (target_host, <port from frame>).
       # prints its Reticulum destination hash for the ingress end.
 
-  INGRESS — next to the user; the user's traffic ENTERS the tunnel here.
+  INGRESS sits next to the user; the user's traffic ENTERS the tunnel here.
       meshtunnel.py ingress --service mygame --egress-hash <hash> \
                     --bind 127.0.0.1 --ports 5998,5999,9000,7778,7000-7400 \
                     --identity ./mt_ingress_identity
@@ -33,7 +33,7 @@ different services get different destinations. Nothing above is EQ-specific
 except the example values.
 
 IDENTITY & ACCESS CONTROL
-  Over Reticulum there is no client IP — every ingress instead has a Reticulum
+  Over Reticulum there is no client IP. Every ingress instead has a Reticulum
   Identity, and the Link it opens is cryptographically bound to that Identity's
   destination hash. That hash is unforgeable and stable: it is the sovereign
   player id. Give the ingress a persisted --identity and it identifies itself to
@@ -61,7 +61,7 @@ Frame (one per datagram):  >BH  flags(1) dest_port(2 BE) | payload
 
 I/O model: the RNS packet callback (RNS's thread) only ENQUEUES; a single
 worker thread owns every socket and the selector, so selector state is never
-mutated across threads. Data plane is UNRELIABLE (create_receipt=False) — the
+mutated across threads. Data plane is UNRELIABLE (create_receipt=False) because the
 tunneled protocol owns reliability end-to-end.
 """
 
@@ -122,7 +122,7 @@ class IdentityRegistry:
     """Persists ingress hash -> stable synthetic client IP: the player registry.
 
     The mapping is deterministic-per-registry (sequential from the range) and
-    persisted, so an identity always resolves to the same synthetic IP — that is
+    persisted, so an identity always resolves to the same synthetic IP. That is
     what makes an IP ban in the downstream service equivalent to a hash ban.
     """
 
@@ -240,7 +240,7 @@ class EgressEnd:
         self.dest.set_link_established_callback(self.on_link)
         RNS.log(f"[{service}] egress destination: {RNS.prettyhexrep(self.dest.hash)}", RNS.LOG_INFO)
         if self.require_identity:
-            RNS.log("egress: identity REQUIRED — unidentified links are dropped", RNS.LOG_INFO)
+            RNS.log("egress: identity REQUIRED (unidentified links are dropped)", RNS.LOG_INFO)
         if self.registry and self.registry.net is not None:
             RNS.log(f"egress: synthetic client IPs from {self.registry.net}", RNS.LOG_INFO)
         threading.Thread(target=self._worker, daemon=True).start()
@@ -262,7 +262,7 @@ class EgressEnd:
     def _identity_deadline(self, lid):
         info = self.link_info.get(lid)
         if info and not info["ready"]:
-            RNS.log("ingress did not identify within grace window — tearing down", RNS.LOG_WARNING)
+            RNS.log("ingress did not identify within grace window, tearing down", RNS.LOG_WARNING)
             try:
                 info["link"].teardown()
             except Exception:
@@ -274,7 +274,7 @@ class EgressEnd:
             return
         hexhash = identity.hexhash
         if self.access and not self.access.allowed(hexhash):
-            RNS.log(f"DENIED ingress {hexhash} — tearing down link", RNS.LOG_WARNING)
+            RNS.log(f"DENIED ingress {hexhash}, tearing down link", RNS.LOG_WARNING)
             try:
                 link.teardown()
             except Exception:
@@ -342,7 +342,7 @@ class EgressEnd:
                     sock.bind((synth_ip, 0))
                 except OSError as e:
                     RNS.log(f"could not bind synthetic ip {synth_ip} ({e}); "
-                            f"using default source — is the range routed to this host?",
+                            f"using default source (is the range routed to this host?)",
                             RNS.LOG_WARNING)
             sock.connect((self.target_host, port))
             sock.setblocking(False)
@@ -394,7 +394,7 @@ class IngressEnd:
                 time.sleep(0.2)
         recalled = RNS.Identity.recall(self.egress_hash)
         if recalled is None:
-            RNS.log("no path/identity to egress yet — will retry", RNS.LOG_INFO)
+            RNS.log("no path/identity to egress yet, will retry", RNS.LOG_INFO)
             return
         dest = RNS.Destination(recalled, RNS.Destination.OUT,
                                RNS.Destination.SINGLE, self.service, ASPECT)
@@ -418,7 +418,7 @@ class IngressEnd:
                         self.link.teardown()
                     except Exception:
                         pass
-                RNS.log("egress link down — reconnecting", RNS.LOG_INFO)
+                RNS.log("egress link down, reconnecting", RNS.LOG_INFO)
                 self._establish()
 
     def on_up(self, link):

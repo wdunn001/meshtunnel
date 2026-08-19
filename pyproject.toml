@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "meshtunnel"
 version = "0.1.0"
-description = "Carry arbitrary UDP over a Reticulum mesh — a generic UDP-over-Reticulum tunnel"
+description = "Carry arbitrary UDP over a Reticulum mesh, a generic UDP-over-Reticulum tunnel"
 readme = "README.md"
 requires-python = ">=3.7"
 license = { text = "MIT" }

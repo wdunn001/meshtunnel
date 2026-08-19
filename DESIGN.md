@@ -1,4 +1,4 @@
-# meshtunnel — design
+# meshtunnel, design
 
 meshtunnel carries a UDP protocol across a Reticulum mesh without changing
 either end of that protocol. A **bridge pair** shims the transport underneath:
@@ -16,13 +16,13 @@ to a local address; the tunnel moves the bytes over the mesh in between.
 - Base `Reticulum.MTU = 500`, single-packet `MDU ≈ 465 B`.
 - With `LINK_MTU_DISCOVERY` and a large `TCPInterface.HW_MTU`, a Link over a TCP
   interface negotiates a large MTU, so `Link.mdu` is big enough to carry a full
-  datagram for most protocols — no bridge fragmentation on the TCP path. On
+  datagram for most protocols, no bridge fragmentation on the TCP path. On
   LoRa/RNode interfaces the MTU stays ~500, so the bridge must fragment there
   (see "Open items").
 - `Link` gives an encrypted, sequenced session. `RNS.Packet(link, data).send()`
   is the low-latency **unreliable** datagram primitive. `Channel`/`Buffer` add
-  reliable sequenced messaging — use those for control, **not** the data plane.
-- Link keepalive is configurable (5–360 s) and tolerates up to ~1.75 s RTT.
+  reliable sequenced messaging, use those for control, **not** the data plane.
+- Link keepalive is configurable (5-360 s) and tolerates up to ~1.75 s RTT.
 
 ## The port collapse (the core trick)
 
@@ -41,7 +41,7 @@ flags bits: 0x01 = compressed payload   (reserved)
 
 `dest_port` is the *original* UDP destination port. A whole contiguous port
 range (for example a game's per-zone ports) is handled by that single field for
-free — the egress just replays each frame to the port named in its header. No
+free, the egress just replays each frame to the port named in its header. No
 enumeration, no per-port config.
 
 ## Components
@@ -61,14 +61,14 @@ One Link carries one client. Multiple clients means multiple Links.
 
 Over Reticulum there is no client IP to key on. Each ingress has a Reticulum
 Identity, and the Link is cryptographically bound to that identity's destination
-hash — unforgeable and stable. That hash is the client id:
+hash, unforgeable and stable. That hash is the client id:
 
 - **Bans key on the hash**, not a spoofable IP. A denied hash is refused at link
   setup, before any packet reaches the service, and can't be evaded by
   reconnecting from elsewhere.
 - For an IP-centric service, the egress maps each hash to a **stable synthetic
   source IP** and sources that client's datagrams from it, so per-client bans,
-  dedup, and logs keep working unchanged — and every synthetic IP resolves back
+  dedup, and logs keep working unchanged, and every synthetic IP resolves back
   through the registry to the real hash.
 
 ## I/O model
@@ -77,7 +77,7 @@ The RNS packet callback (on RNS's thread) only *enqueues*. A single worker
 thread owns every socket and the selector, so selector state is never mutated
 across threads. The data plane is unreliable by design: the tunneled protocol
 owns reliability end-to-end. Do **not** double-ACK by stacking a reliable
-Reticulum transport under a protocol that already retransmits — that produces
+Reticulum transport under a protocol that already retransmits, that produces
 retransmit-latency spirals. On lossy radio, prefer link-layer FEC over
 retransmit.
 
@@ -85,10 +85,10 @@ retransmit.
 
 1. **Terminate keepalives at the bridges.** Many protocols fire frequent
    heartbeats per service. Answer them locally at each bridge and only ship real
-   state changes across the mesh — an order-of-magnitude traffic cut on metered
+   state changes across the mesh, an order-of-magnitude traffic cut on metered
    links.
 2. **Aggregate** several small datagrams into one Link packet (`flags 0x02`) to
-   amortize header overhead — a natural fit given the large TCP Link MTU.
+   amortize header overhead, a natural fit given the large TCP Link MTU.
 3. **Compress** with a static dictionary trained on the protocol's traffic
    (loaded identically on both ends); tiny structs don't compress alone, but a
    shared dict plus aggregation does. Delta-encode repetitive streams.
