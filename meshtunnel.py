@@ -11,7 +11,7 @@ request/response over the mesh; MeshTunnel is a raw datagram pipe for latency-
 sensitive, high-rate protocols that own their own reliability.
 
 Two ends, both leaf nodes that peer with the Local Peering Hub. They are named
-for the direction traffic flows through them, NOT "client/server", which would
+for the direction traffic flows through them. Calling them "client/server" would
 collide with the client/server of whatever protocol is being tunneled:
 
   EGRESS sits next to the target service; tunneled traffic EXITS here onto the real

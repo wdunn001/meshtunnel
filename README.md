@@ -12,13 +12,13 @@ reliability.
 
 Why bother? Because it lets you reach a service that has **no public IP and no
 forwarded port**, the only path to it is the mesh. And because your client's
-identity on the far end is a Reticulum destination hash, not a spoofable IP:
-access control and per-client tracking finally stop depending on the network
-layer lying to you.
+identity on the far end is a Reticulum destination hash that cannot be spoofed
+the way an IP can: access control and per-client tracking finally stop depending
+on the network layer lying to you.
 
 ## How it works
 
-Two ends, named for the direction traffic flows (not "client/server", which
+Two ends, named for the direction traffic flows (calling them "client/server"
 would collide with the client/server of whatever you're tunneling):
 
 ```
@@ -163,9 +163,9 @@ telemetry) ride a mesh far better than twitch-sensitive modern ones.
 
 ## Why this exists
 
-For years people wouldn't switch networks (or platforms) not because they were
-worse, but because they couldn't bring the things they wanted to *do* there.
-People don't adopt infrastructure; they adopt what runs on it. Put something
+For years people wouldn't switch networks (or platforms) because they couldn't
+bring the things they wanted to *do* there. Network quality was rarely the
+barrier. People adopt infrastructure for what runs on it. Put something
 people actually want to use on the mesh and you give them a reason to run a node, and once they're on the mesh, everything else it carries (messaging, maps,
 files, off-grid comms) comes with them. A game server was the first thing this
 tunnel carried. It'll carry yours too.

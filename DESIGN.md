@@ -21,7 +21,8 @@ to a local address; the tunnel moves the bytes over the mesh in between.
   (see "Open items").
 - `Link` gives an encrypted, sequenced session. `RNS.Packet(link, data).send()`
   is the low-latency **unreliable** datagram primitive. `Channel`/`Buffer` add
-  reliable sequenced messaging, use those for control, **not** the data plane.
+  reliable sequenced messaging. Use those for control and keep them off the data
+  plane.
 - Link keepalive is configurable (5-360 s) and tolerates up to ~1.75 s RTT.
 
 ## The port collapse (the core trick)
@@ -63,9 +64,9 @@ Over Reticulum there is no client IP to key on. Each ingress has a Reticulum
 Identity, and the Link is cryptographically bound to that identity's destination
 hash, unforgeable and stable. That hash is the client id:
 
-- **Bans key on the hash**, not a spoofable IP. A denied hash is refused at link
-  setup, before any packet reaches the service, and can't be evaded by
-  reconnecting from elsewhere.
+- **Bans key on the hash**, which can't be spoofed the way an IP can. A denied
+  hash is refused at link setup, before any packet reaches the service, and
+  can't be evaded by reconnecting from elsewhere.
 - For an IP-centric service, the egress maps each hash to a **stable synthetic
   source IP** and sources that client's datagrams from it, so per-client bans,
   dedup, and logs keep working unchanged, and every synthetic IP resolves back
