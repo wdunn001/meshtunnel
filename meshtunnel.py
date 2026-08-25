@@ -381,6 +381,10 @@ class IngressEnd:
         self.link = None
         for p in self.ports_wanted:      # local ports bind up front, independent of the link
             self._bind(p)
+        if not self.ports:
+            RNS.log("no local ports could be bound, so the tunnel will connect but forward "
+                    "nothing. See the bind errors above; a privileged port needs elevation.",
+                    RNS.LOG_ERROR)
         threading.Thread(target=self._worker, daemon=True).start()
         self._establish()
         threading.Thread(target=self._link_monitor, daemon=True).start()
@@ -434,7 +438,11 @@ class IngressEnd:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
             s.bind((self.bind_addr, port))
-        except OSError:
+        except OSError as e:
+            hint = (" (a privileged port under 1024 needs root or CAP_NET_BIND_SERVICE, "
+                    "or another process such as w32time/chrony already holds it)"
+                    if port < 1024 else " (already in use?)")
+            RNS.log(f"could not bind {self.bind_addr}:{port}: {e}{hint}", RNS.LOG_ERROR)
             s.close(); return
         s.setblocking(False)
         self.ports[port] = [s, None]
